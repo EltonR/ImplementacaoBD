@@ -5,6 +5,8 @@ import java.util.ArrayList;
 public class Consulta {
     
     public static void main(String[] args) {
+        String s = "  sdfajsdkfsj    sdhfaksjdhf    ";
+        System.out.println(s.trim());
         
     }
     
@@ -12,7 +14,7 @@ public class Consulta {
     private String select;
     private String from;
     private String where;
-    private ArrayList colunas;
+    private ArrayList<String> colunas;
     private ArrayList tabelas;
     private ArrayList joins;
     private ArrayList wheres;
@@ -81,7 +83,12 @@ public class Consulta {
             }
             colunas.add(s6[i]);
         }
-        
+        for(int i=0; i<colunas.size(); i++){
+            if((colunas.get(i).length() - colunas.get(i).replace(".", "").length()) > 1)
+                return "Coluna inválida na clausula 'SELECT'";
+            if(colunas.get(i).trim().contains(" "))
+                return "Coluna inválida na clausula 'SELECT'";
+        }
         
         if(where.contains("(")){
             int np = 0;
