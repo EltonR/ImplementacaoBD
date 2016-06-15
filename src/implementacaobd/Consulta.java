@@ -5,8 +5,8 @@ import java.util.ArrayList;
 public class Consulta {
     
     public static void main(String[] args) {
-        String s = "  sdfajsdkfsj    sdhfaksjdhf    ";
-        System.out.println(s.trim());
+        String s = " sadjkhf ON asdhfkajsd    ";
+        System.out.println(s.substring(s.indexOf("ON")+3));
         
     }
     
@@ -15,9 +15,9 @@ public class Consulta {
     private String from;
     private String where;
     private ArrayList<String> colunas;
-    private ArrayList tabelas;
-    private ArrayList joins;
-    private ArrayList wheres;
+    private ArrayList<String> tabelas;
+    private ArrayList<String> joins;
+    private ArrayList<String> wheres;
     
     public Consulta(String consulta){
         this.consulta = consulta.trim().toUpperCase();
@@ -70,6 +70,21 @@ public class Consulta {
                 tabelas.add(s5[0].replace(" ", ""));
             }
         }
+        for(int i=0; i<joins.size(); i++){
+            String s = joins.get(i).substring(joins.get(i).indexOf("ON")+3);
+            if(!s.contains(" = "))
+                return "Sem ' = ' no ON do JOIN...";
+            String ss[] = s.split(" = ");
+            for(int j=0; j<ss.length; j++){
+                if(ss[j].trim().contains(" "))
+                    return "Erro na clausula ON...";
+                if((ss[j].length() - ss[j].replace(".", "").length()) != 1)
+                    return "Erro nas colunas da clausula ON...";
+                String[] sss = ss[j].split("[.]");
+                if(!tabelas.contains(sss[0]))
+                    return "Tabela da clausula ON não encontrada...";
+            }
+        }
         
         String[] s6 = select.split(",");
         for(int i=0; i<s6.length; i++){
@@ -117,6 +132,9 @@ public class Consulta {
         }
         for(int i=0; i<colunas.size(); i++){
             System.out.println("C="+colunas.get(i));
+        }
+        for(int i=0; i<joins.size(); i++){
+            System.out.println("J="+joins.get(i));
         }
         //System.out.println(toString());
         return "OK";
