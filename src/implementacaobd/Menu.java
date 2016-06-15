@@ -64,6 +64,8 @@ public class Menu extends javax.swing.JFrame {
         String retorno = c.testa();
         if(!retorno.equalsIgnoreCase("OK"))
             JOptionPane.showMessageDialog(this, retorno, "Erro", JOptionPane.ERROR_MESSAGE);
+        else
+            System.out.println("OK");
         
     }//GEN-LAST:event_jButton1ActionPerformed
 
