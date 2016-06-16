@@ -70,19 +70,67 @@ public class Consulta {
                 tabelas.add(s5[0].replace(" ", ""));
             }
         }
+        joins = new ArrayList<>();
+        String[] temp_f = from.split(" JOIN ");
+        for(int i=0; i<temp_f.length-1; i++){
+            if(i==0){
+                String s = temp_f[i]+" JOIN "+temp_f[i+1];
+                joins.add(s);
+            }else{
+                String s = joins.get(joins.size()-1);
+                s += " JOIN "+temp_f[i+1];
+                joins.add(s);
+            }
+        }
+        
+        
+            
         for(int i=0; i<joins.size(); i++){
-            String s = joins.get(i).substring(joins.get(i).indexOf("ON")+3);
-            if(!s.contains(" = "))
-                return "Sem ' = ' no ON do JOIN...";
-            String ss[] = s.split(" = ");
-            for(int j=0; j<ss.length; j++){
-                if(ss[j].trim().contains(" "))
-                    return "Erro na clausula ON...";
-                if((ss[j].length() - ss[j].replace(".", "").length()) != 1)
-                    return "Erro nas colunas da clausula ON...";
-                String[] sss = ss[j].split("[.]");
-                if(!tabelas.contains(sss[0]))
-                    return "Tabela da clausula ON não encontrada...";
+            if(i<1){    //na primeira vez, é "tab1 JOIN tab2 ON tab1.x=tab2.x"
+                String s = joins.get(i).substring(joins.get(i).indexOf("ON")+3);
+                if(!s.contains(" = "))
+                    return "Sem ' = ' no ON do JOIN...";
+                String ss[] = s.split(" = ");
+                for(int j=0; j<ss.length; j++){
+                    if(ss[j].trim().contains(" ")){
+                        System.out.println("SS[j]: "+ss[j]);
+                        return "Erro na clausula ON...";
+                    }
+                    if((ss[j].length() - ss[j].replace(".", "").length()) != 1){
+                        return "Erro nas colunas da clausula ON...";
+                    }
+                    String[] sss = ss[j].split("[.]");
+                    if(sss.length < 2){
+                        return "Erro nas colunas da clausula ON...";
+                    }
+                    if(!tabelas.contains(sss[0])){
+                        return "Tabela da clausula ON não encontrada...";
+                    }
+                }
+            }else{      //a partir da segunda é o join anterior + " JOIN tabx ON tabx.colx = taby.coly"
+                String[] st = joins.get(i).split(" JOIN ");
+                String ssr = st[st.length-1];
+                String s = ssr.substring(ssr.indexOf("ON")+3);
+                if(!s.contains(" = "))
+                    return "Sem ' = ' no ON do JOIN...";
+                String ss[] = s.split(" = ");
+                for(int j=0; j<ss.length; j++){
+                    if(ss[j].trim().contains(" ")){
+                        System.out.println("SS[j]: "+ss[j]);
+                        return "Erro na clausula ON...";
+                    }
+                    if((ss[j].length() - ss[j].replace(".", "").length()) != 1){
+                        return "Erro nas colunas da clausula ON...";
+                    }
+                    String[] sss = ss[j].split("[.]");
+                    if(sss.length < 2){
+                        return "Erro nas colunas da clausula ON...";
+                    }
+                    if(!tabelas.contains(sss[0])){
+                        //precisa adicionar todas as tabelas antes desse ponto!
+                        //return "Tabela da clausula ON não encontrada...";
+                    }
+                }
             }
         }
         
@@ -105,25 +153,27 @@ public class Consulta {
                 return "Coluna inválida na clausula 'SELECT'";
         }
         
-        if(where.contains("(")){
-            int np = 0;
-            for(int i=0; i<where.length(); i++){
-                if(where.substring(i, i+1).equals("(")){
-                    np++;
-                }
-                if(where.substring(i, i+1).equals(")")){
-                    np--;
-                    if(np<0){
-                        return "Erro na utilização do parênteses";
+        if(where!=null){
+            if(where.contains("(")){
+                int np = 0;
+                for(int i=0; i<where.length(); i++){
+                    if(where.substring(i, i+1).equals("(")){
+                        np++;
+                    }
+                    if(where.substring(i, i+1).equals(")")){
+                        np--;
+                        if(np<0){
+                            return "Erro na utilização do parênteses";
+                        }
                     }
                 }
-            }
-            if(np!=0){
-                return "Erro na utilização do parênteses";
-            }
-        }else{
-            if(where.contains(")")){
-                return "Erro na utilização do parênteses";
+                if(np!=0){
+                    return "Erro na utilização do parênteses";
+                }
+            }else{
+                if(where.contains(")")){
+                    return "Erro na utilização do parênteses";
+                }
             }
         }
         
@@ -136,7 +186,6 @@ public class Consulta {
         for(int i=0; i<joins.size(); i++){
             System.out.println("J="+joins.get(i));
         }
-        //System.out.println(toString());
         return "OK";
     }
 
