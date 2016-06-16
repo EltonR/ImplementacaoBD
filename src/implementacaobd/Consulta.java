@@ -5,9 +5,11 @@ import java.util.ArrayList;
 public class Consulta {
     
     public static void main(String[] args) {
-        String s = " sadjkhf ON asdhfkajsd    ";
-        System.out.println(s.substring(s.indexOf("ON")+3));
-        
+        String s = "1 = 1 AND 2 OR 3";
+        /*String[] ss = s.split(" AND | OR ");
+        for(int i=0; i<ss.length; i++){
+            System.out.println(ss[i]);
+        }*/
     }
     
     private String consulta;
@@ -18,6 +20,9 @@ public class Consulta {
     private ArrayList<String> tabelas;
     private ArrayList<String> joins;
     private ArrayList<String> wheres;
+    private ArrayList<String> parenteses;
+    private ArrayList<Integer> abreP;
+    private ArrayList<Integer> fechaP;
     
     public Consulta(String consulta){
         this.consulta = consulta.trim().toUpperCase();
@@ -25,6 +30,9 @@ public class Consulta {
         colunas = new ArrayList();
         tabelas = new ArrayList();
         joins = new ArrayList();
+        parenteses = new ArrayList();
+        abreP = new ArrayList();
+        fechaP = new ArrayList();
     }
     
     public String testa(){
@@ -76,10 +84,15 @@ public class Consulta {
             if(i==0){
                 String s = temp_f[i]+" JOIN "+temp_f[i+1];
                 joins.add(s);
+                String[] t2 = temp_f[i+1].split(" ON ");
+                tabelas.add(temp_f[i].replace(" ",""));
+                tabelas.add(t2[0].replace(" ", ""));
             }else{
                 String s = joins.get(joins.size()-1);
                 s += " JOIN "+temp_f[i+1];
                 joins.add(s);
+                String[] t2 = temp_f[i+1].split(" ON ");
+                tabelas.add(t2[0].replace(" ", ""));
             }
         }
         
@@ -88,6 +101,8 @@ public class Consulta {
         for(int i=0; i<joins.size(); i++){
             if(i<1){    //na primeira vez, é "tab1 JOIN tab2 ON tab1.x=tab2.x"
                 String s = joins.get(i).substring(joins.get(i).indexOf("ON")+3);
+                System.out.println("J=="+joins.get(i));
+                System.out.println("S=="+s);
                 if(!s.contains(" = "))
                     return "Sem ' = ' no ON do JOIN...";
                 String ss[] = s.split(" = ");
@@ -158,10 +173,12 @@ public class Consulta {
                 int np = 0;
                 for(int i=0; i<where.length(); i++){
                     if(where.substring(i, i+1).equals("(")){
+                        abreP.add(i);
                         np++;
                     }
                     if(where.substring(i, i+1).equals(")")){
                         np--;
+                        fechaP.add(i);
                         if(np<0){
                             return "Erro na utilização do parênteses";
                         }
@@ -170,9 +187,75 @@ public class Consulta {
                 if(np!=0){
                     return "Erro na utilização do parênteses";
                 }
+                
+                String s = where;
+                System.out.println(abreP.size() + " " + fechaP.size());
+                
+                int i=0;
+                int j=0;
+                while(abreP.size()!=0){
+                    System.out.println("SL="+s.length());
+                    for(int v=0; v<abreP.size(); v++){
+                        System.out.println("ABRE"+v+"= "+abreP.get(v));
+                        System.out.println("FECHA"+v+"= "+fechaP.get(v));
+                    }
+                    String ss = s.substring(abreP.get(i)+1,fechaP.get(0));
+                    System.out.println("W="+where);
+                    System.out.println(i+" SS="+ss);
+                    if(!ss.contains("(")){
+                        System.out.println("ENTRA");
+                        parenteses.add(ss);
+                        //s = s.substring(0,abreP.get(i))+" '"+String.valueOf(parenteses.size()-1)+"' "+s.substring(fechaP.get(0)+1,s.length()-1);
+                        int dif = s.length();
+                        s = s.replace("("+ss+")", " @"+String.valueOf(parenteses.size()-1)+"@ ");
+                        dif-=s.length();
+                        for(int k=1; k<fechaP.size(); k++){
+                            if(k>i){
+                                int x = abreP.get(k);
+                                x-=dif;
+                                abreP.set(k, x);
+                            }
+                            int y = fechaP.get(k);
+                            y-=dif;
+                            fechaP.set(k, y);
+                        }
+                        abreP.remove(i);
+                        fechaP.remove(0);
+                        i=0;
+                        j++;
+                    }else{
+                        i++;
+                    }
+                }
             }else{
                 if(where.contains(")")){
                     return "Erro na utilização do parênteses";
+                }
+            }
+        }
+        for(int i=0; i<parenteses.size(); i++){
+            String[] s = parenteses.get(i).split(" AND | OR ");
+            for(int j=0; j<s.length; j++){
+                if(!s[j].contains("@")){
+                    if(!(s[j].contains(" > ") || s[j].contains(" < ") || s[j].contains(" = "))){
+                        return "Erro nos operadores na cláusula WHERE";
+                    }
+                    String[] ss = s[j].split(" > | < | = ");
+                    if(!(ss[0].contains(".") || ss[1].contains("."))){
+                        return "Erro nas tabelas presentes na cláusula WHERE";
+                    }
+                    if(ss[0].contains(".")){
+                        String[] sss = ss[0].split("[.]");
+                        if(!tabelas.contains(sss[0].trim())){
+                            return "Erro nas tabelas presentes na cláusula WHERE";
+                        }                            
+                    }
+                    if(ss[1].contains(".")){
+                        String[] sss = ss[1].split("[.]");
+                        if(!tabelas.contains(sss[0].trim())){
+                            return "Erro nas tabelas presentes na cláusula WHERE";
+                        }                            
+                    }
                 }
             }
         }
@@ -185,6 +268,9 @@ public class Consulta {
         }
         for(int i=0; i<joins.size(); i++){
             System.out.println("J="+joins.get(i));
+        }
+        for(int i=0; i<parenteses.size(); i++){
+            System.out.println("P="+parenteses.get(i));
         }
         return "OK";
     }
