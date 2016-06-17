@@ -5,11 +5,15 @@ import java.util.ArrayList;
 public class Consulta {
     
     public static void main(String[] args) {
-        String s = "1 = 1 AND 2 OR 3";
+        String s = "13'5\"64";
+        String s1 = "123a45";
+        String s2 = "123.5";
         /*String[] ss = s.split(" AND | OR ");
         for(int i=0; i<ss.length; i++){
             System.out.println(ss[i]);
         }*/
+        System.out.println(s);
+        System.out.println(s.contains("\""));
     }
     
     private String consulta;
@@ -101,14 +105,11 @@ public class Consulta {
         for(int i=0; i<joins.size(); i++){
             if(i<1){    //na primeira vez, é "tab1 JOIN tab2 ON tab1.x=tab2.x"
                 String s = joins.get(i).substring(joins.get(i).indexOf("ON")+3);
-                System.out.println("J=="+joins.get(i));
-                System.out.println("S=="+s);
                 if(!s.contains(" = "))
                     return "Sem ' = ' no ON do JOIN...";
                 String ss[] = s.split(" = ");
                 for(int j=0; j<ss.length; j++){
                     if(ss[j].trim().contains(" ")){
-                        System.out.println("SS[j]: "+ss[j]);
                         return "Erro na clausula ON...";
                     }
                     if((ss[j].length() - ss[j].replace(".", "").length()) != 1){
@@ -131,7 +132,6 @@ public class Consulta {
                 String ss[] = s.split(" = ");
                 for(int j=0; j<ss.length; j++){
                     if(ss[j].trim().contains(" ")){
-                        System.out.println("SS[j]: "+ss[j]);
                         return "Erro na clausula ON...";
                     }
                     if((ss[j].length() - ss[j].replace(".", "").length()) != 1){
@@ -189,21 +189,14 @@ public class Consulta {
                 }
                 
                 String s = where;
-                System.out.println(abreP.size() + " " + fechaP.size());
                 
                 int i=0;
                 int j=0;
                 while(abreP.size()!=0){
-                    System.out.println("SL="+s.length());
                     for(int v=0; v<abreP.size(); v++){
-                        System.out.println("ABRE"+v+"= "+abreP.get(v));
-                        System.out.println("FECHA"+v+"= "+fechaP.get(v));
                     }
                     String ss = s.substring(abreP.get(i)+1,fechaP.get(0));
-                    System.out.println("W="+where);
-                    System.out.println(i+" SS="+ss);
                     if(!ss.contains("(")){
-                        System.out.println("ENTRA");
                         parenteses.add(ss);
                         //s = s.substring(0,abreP.get(i))+" '"+String.valueOf(parenteses.size()-1)+"' "+s.substring(fechaP.get(0)+1,s.length()-1);
                         int dif = s.length();
@@ -241,23 +234,99 @@ public class Consulta {
                         return "Erro nos operadores na cláusula WHERE";
                     }
                     String[] ss = s[j].split(" > | < | = ");
+                    if(ss.length != 2){
+                        return "Erro nos operadores na cláusula WHERE";
+                    }
                     if(!(ss[0].contains(".") || ss[1].contains("."))){
                         return "Erro nas tabelas presentes na cláusula WHERE";
+                    }                    
+                    int tab = 0;
+                    if(ss[0].contains("'") || ss[0].contains("\"")){
+                        String ls = ss[0].replace("'","").replace("\"","");
+                        if(ss[0].length()-ls.length()!=2){
+                            return "Erro nos operadores na claúsula WHERE";
+                        }
+                    }else{
+                        if(ss[0].contains(".")){
+                            String[] sss = ss[0].split("[.]");
+                            if(sss.length!=2){
+                                return "Erro nos operadores na claúsula WHERE";
+                            }
+                            if(!sss[0].matches("[0-9]+")){
+                                if(!tabelas.contains(sss[0].trim())){
+                                    return "Erro nas tabelas presentes na cláusula WHERE";
+                                }else{
+                                    tab = 1;
+                                }  
+                            }else{
+                                if(!sss[1].matches("[0-9]+")){
+                                    return "Erro nos operadores na claúsula WHERE";
+                                }
+                            }
+                        }else{
+                            if(!ss[1].matches("[0-9]+")){
+                                return "Erro nos operadores na claúsula WHERE";
+                            }
+                        }
                     }
-                    if(ss[0].contains(".")){
-                        String[] sss = ss[0].split("[.]");
-                        if(!tabelas.contains(sss[0].trim())){
-                            return "Erro nas tabelas presentes na cláusula WHERE";
-                        }                            
+                    if(ss[1].contains("'") || ss[1].contains("\"")){
+                        String ls = ss[1].replace("'","").replace("\"","");
+                        if(ss[1].length()-ls.length()!=2){
+                            return "Erro nos operadores na claúsula WHERE";
+                        }
+                    }else{
+                        if(ss[1].contains(".")){
+                            String[] sss = ss[1].split("[.]");
+                            if(sss.length!=2){
+                                return "Erro nos operadores na claúsula WHERE";
+                            }
+                            if(!sss[0].matches("[0-9]+")){
+                                if(!tabelas.contains(sss[0].trim())){
+                                    return "Erro nas tabelas presentes na cláusula WHERE";
+                                }else{
+                                    tab = 1;
+                                }
+                            }else{
+                                if(!sss[1].matches("[0-9]+")){
+                                    return "Erro nos operadores na claúsula WHERE";
+                                }
+                            }
+                        }else{
+                            if(!ss[1].matches("[0-9]+")){
+                                return "Erro nos operadores na claúsula WHERE";
+                            }
+                        }
                     }
-                    if(ss[1].contains(".")){
-                        String[] sss = ss[1].split("[.]");
-                        if(!tabelas.contains(sss[0].trim())){
-                            return "Erro nas tabelas presentes na cláusula WHERE";
-                        }                            
+                    if(tab == 0){
+                        return "Erro nas tabelas presentes na cláusula WHERE";
                     }
                 }
             }
+        }
+        if(parenteses.size()==0){
+            String[] s = where.split(" AND | OR ");
+            for(int j=0; j<s.length; j++){
+                if(!(s[j].contains(" > ") || s[j].contains(" < ") || s[j].contains(" = "))){
+                    return "Erro nos operadores na cláusula WHERE";
+                }
+                String[] ss = s[j].split(" > | < | = ");
+                if(!(ss[0].contains(".") || ss[1].contains("."))){
+                    return "Erro nas tabelas presentes na cláusula WHERE";
+                }
+                if(ss[0].contains(".")){
+                    String[] sss = ss[0].split("[.]");
+                    if(!tabelas.contains(sss[0].trim())){
+                        return "Erro nas tabelas presentes na cláusula WHERE";
+                    }                            
+                }
+                if(ss[1].contains(".")){
+                    String[] sss = ss[1].split("[.]");
+                    if(!tabelas.contains(sss[0].trim())){
+                        return "Erro nas tabelas presentes na cláusula WHERE";
+                    }                            
+                }
+            }
+            
         }
         
         for(int i=0; i<tabelas.size(); i++){
