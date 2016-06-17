@@ -229,6 +229,7 @@ public class Consulta {
         for(int i=0; i<parenteses.size(); i++){
             String[] s = parenteses.get(i).split(" AND | OR ");
             for(int j=0; j<s.length; j++){
+                System.out.println("S=="+s[j]);
                 if(!s[j].contains("@")){
                     if(!(s[j].contains(" > ") || s[j].contains(" < ") || s[j].contains(" = "))){
                         return "Erro nos operadores na cláusula WHERE";
@@ -237,6 +238,8 @@ public class Consulta {
                     if(ss.length != 2){
                         return "Erro nos operadores na cláusula WHERE";
                     }
+                    System.out.println("SS[0]=="+ss[0]);
+                    System.out.println("SS[1]=="+ss[1]);
                     if(!(ss[0].contains(".") || ss[1].contains("."))){
                         return "Erro nas tabelas presentes na cláusula WHERE";
                     }                    
@@ -248,6 +251,10 @@ public class Consulta {
                         }
                     }else{
                         if(ss[0].contains(".")){
+                            String ls = ss[0].replace(".","");
+                            if(ss[0].length()-ls.length()!=1){
+                                return "Erro nos operadores na claúsula WHERE";
+                            }
                             String[] sss = ss[0].split("[.]");
                             if(sss.length!=2){
                                 return "Erro nos operadores na claúsula WHERE";
@@ -276,6 +283,10 @@ public class Consulta {
                         }
                     }else{
                         if(ss[1].contains(".")){
+                            String ls = ss[1].replace(".","");
+                            if(ss[1].length()-ls.length()!=1){
+                                return "Erro nos operadores na claúsula WHERE";
+                            }
                             String[] sss = ss[1].split("[.]");
                             if(sss.length!=2){
                                 return "Erro nos operadores na claúsula WHERE";
