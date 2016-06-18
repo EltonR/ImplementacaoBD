@@ -59,8 +59,14 @@ public class Consulta {
         
         if(!s1[1].contains(" WHERE ")){
             from = s1[1];
+            if(s1[1].contains(" WHERE")){
+                return "Erro na clausula WHERE";
+            }
         }else{
             String[] s2 = s1[1].split(" WHERE ");
+            if(s2.length != 2){
+                return "Erro na clausula WHERE";
+            }
             from = s2[0];
             where = s2[1];
         }
@@ -99,10 +105,6 @@ public class Consulta {
                 joins.add(t2[1]);
                 //tabelas.add(t2[0].replace(" ", ""));
             }
-        }
-        
-        for(int i=0; i<tabelas.size(); i++){
-            System.out.println("TT=="+tabelas.get(i));
         }
             
         for(int i=0; i<joins.size(); i++){
