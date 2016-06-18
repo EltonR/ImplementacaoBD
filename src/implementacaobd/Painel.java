@@ -13,9 +13,7 @@ public class Painel extends JPanel{
     private String codigo;
     
     public Painel(int tipo, String codigo){
-        this.setMaximumSize(new Dimension(30*codigo.length(),100));
-        this.tipo = tipo;
-        this.codigo = codigo;
+        
     }
     
     public void desenhar(int tipo, String codigo){
