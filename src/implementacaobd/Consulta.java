@@ -5,11 +5,8 @@ import java.util.ArrayList;
 public class Consulta {
     
     public static void main(String[] args) {
-        String s = "\"abc'";
-        System.out.println("S="+s);
-        String ls = s.replace("'","");
-        System.out.println("SL="+s.length());
-        System.out.println("SLS="+ls.length());
+        String s = "@3@ n";
+        System.out.println(s.split("@").length);
         
                             
     }
@@ -297,6 +294,10 @@ public class Consulta {
             for(int j=0; j<s.length; j++){
                 if(!s[j].contains("@")){
                     wheres.add(s[j]);
+                }else{
+                    String[] sss = s[j].trim().split("@");
+                    if(sss.length != 2)
+                        return "Erro na clausula WHERE";
                 }
             }
         }
@@ -307,6 +308,9 @@ public class Consulta {
             String[] ss = wheres.get(j).split(" > | < | = ");
             if(ss.length != 2){
                 return "Erro nos operadores na cláusula WHERE";
+            }
+            if(ss[0].trim().contains(" ") || ss[1].trim().contains(" ")){
+                return "Erro na clausula WHERE";
             }
             if(!(ss[0].contains(".") || ss[1].contains("."))){
                 return "Erro nas tabelas presentes na cláusula WHERE";
