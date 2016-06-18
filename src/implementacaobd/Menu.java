@@ -1,11 +1,15 @@
 package implementacaobd;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import javax.swing.JOptionPane;
 
 public class Menu extends javax.swing.JFrame {
 
     public Menu() {
         initComponents();
+        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setSize(d);
     }
 
     
@@ -53,7 +57,7 @@ public class Menu extends javax.swing.JFrame {
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
-                .addContainerGap(451, Short.MAX_VALUE))
+                .addContainerGap(498, Short.MAX_VALUE))
         );
 
         pack();
