@@ -3,6 +3,7 @@ package implementacaobd;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
@@ -49,10 +50,14 @@ public class Painel extends JPanel{
             return;
         }
         if(y == alturaArvore(a)){
+            Font newFont = g2d.getFont().deriveFont(30f);
+            g2d.setFont(newFont);
             g2d.setStroke(new BasicStroke(5f));
-            g2d.drawString(a.getOperador(),30*d,((x-y)*20)+100);
+            g2d.drawString(a.getOperador(),60*d,((x-y)*50)+100);
+            newFont = g2d.getFont().deriveFont(15f);
+            g2d.setFont(newFont);
             g2d.setStroke(new BasicStroke(2f));
-            g2d.drawString(a.getTexto(),30*d+10,((x-y)*20+10)+100);
+            g2d.drawString(a.getTexto(),60*d+40,((x-y)*50)+100);
         }
         int dd = d;
         if(a.getDir()!=null)
