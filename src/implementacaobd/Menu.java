@@ -62,6 +62,8 @@ public class Menu extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         Consulta c = new Consulta(jTextField1.getText());
         String retorno = c.testa();
+        c.geraAlgebraOriginal();
+        c.printaArvoreOriginal();
         if(!retorno.equalsIgnoreCase("OK"))
             JOptionPane.showMessageDialog(this, retorno, "Erro", JOptionPane.ERROR_MESSAGE);
         else
