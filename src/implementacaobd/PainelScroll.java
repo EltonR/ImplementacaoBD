@@ -21,7 +21,7 @@ public class PainelScroll extends JFrame{
     private String codigo;
     private JFrame esse = this;
 
-    public PainelScroll(String codigo){
+    public PainelScroll(Arvore arv){
         frame = new JFrame();
         this.codigo = codigo;
                 jPanel1 = new Painel(1, codigo);

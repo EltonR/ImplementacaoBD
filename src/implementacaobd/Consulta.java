@@ -25,7 +25,8 @@ public class Consulta {
     private ArrayList<String> parenteses;
     private ArrayList<Integer> abreP;
     private ArrayList<Integer> fechaP;
-    private Arvore inicio;
+    private Arvore arvOriginal;
+    private Arvore arvOtimizada;
     
     public Consulta(String consulta){
         this.consulta = consulta.trim().toUpperCase();
@@ -37,7 +38,8 @@ public class Consulta {
         wheres = new ArrayList();
         abreP = new ArrayList();
         fechaP = new ArrayList();
-        inicio = null;
+        arvOriginal = null;
+        arvOtimizada = null;
     }
     
     public String testa(){
@@ -414,34 +416,34 @@ public class Consulta {
     
     public void geraAlgebraOriginal(){
         if(tabelas.size() == 1){
-            inicio = new Arvore("FROM",tabelas.get(0));
+            arvOriginal = new Arvore("FROM",tabelas.get(0));
         }else{
             for(int i=0; i<joins.size(); i++){
-                Arvore j = inicio;
-                inicio = new Arvore("JOIN",joins.get(i));
+                Arvore j = arvOriginal;
+                arvOriginal = new Arvore("JOIN",joins.get(i));
                 Arvore a = new Arvore("FROM",tabelas.get(i+1));
                 if(i==0){
                     Arvore b = new Arvore("FROM",tabelas.get(0));
-                    inicio.addFilho(b,a);
+                    arvOriginal.addFilho(b,a);
                 }else{
-                    inicio.addFilho(j,a);
+                    arvOriginal.addFilho(j,a);
                 }
             }
         }
-        Arvore j = inicio;
-        inicio = new Arvore("WHERE", where);
-        inicio.addFilho(j);
-        j = inicio;
-        inicio = new Arvore("SELECT", select);
-        inicio.addFilho(j);
+        Arvore j = arvOriginal;
+        arvOriginal = new Arvore("WHERE", where);
+        arvOriginal.addFilho(j);
+        j = arvOriginal;
+        arvOriginal = new Arvore("SELECT", select);
+        arvOriginal.addFilho(j);
     }
     
     public void printaArvoreOriginal(){
-        int x = alturaArvore(inicio);
-        int d = getDistArvore(inicio);
+        int x = alturaArvore(arvOriginal);
+        int d = getDistArvore(arvOriginal);
         int y = x;
         while(y>0){
-            System.out.println(levelArv(inicio,y,d));
+            System.out.println(levelArv(arvOriginal,y,d));
             y--;
         }
     }
@@ -482,6 +484,14 @@ public class Consulta {
         }else{
             return y+1;
         }
+    }
+    
+    public void mostraArvoreOriginal(){
+        PainelScroll p = new PainelScroll(arvOriginal);
+    }
+    
+    public void mostraArvoreOtimizada(){
+        PainelScroll p = new PainelScroll(arvOtimizada);
     }
 
     @Override

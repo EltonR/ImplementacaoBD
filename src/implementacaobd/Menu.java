@@ -5,11 +5,14 @@ import java.awt.Toolkit;
 import javax.swing.JOptionPane;
 
 public class Menu extends javax.swing.JFrame {
+    
+    private static Painel jPanel1;
 
     public Menu() {
         initComponents();
         Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
         this.setSize(d);
+        jPanel1 = new Painel(1, "");
     }
 
     
