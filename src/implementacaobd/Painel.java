@@ -9,16 +9,13 @@ import java.awt.Stroke;
 import javax.swing.JPanel;
  
 public class Painel extends JPanel{
-    private int tipo;
-    private String codigo;
+    private Arvore arv;
     
-    public Painel(int tipo, String codigo){
-        
+    public Painel(Arvore arv){
+        this.arv = arv;
     }
     
-    public void desenhar(int tipo, String codigo){
-        this.tipo=tipo;
-        this.codigo = codigo;
+    public void desenhar(){
         paint(getGraphics());
     }
  
@@ -27,9 +24,57 @@ public class Painel extends JPanel{
         drawLines(g);
     }
     
-    void drawLines(Graphics g) {
+    private int getDistArvore(Arvore a){
+        if(a == null){
+            return 0;
+        }
+        return a.getDist()+getDistArvore(a.getEsq());
+    }
+    
+    private int alturaArvore(Arvore a){
+        if(a == null){
+            return 0;
+        }
+        int x = alturaArvore(a.getEsq());
+        int y = alturaArvore(a.getEsq());
+        if(x>y){
+            return x+1;
+        }else{
+            return y+1;
+        }
+    }
+    
+    private void drawNo(Arvore a, Graphics2D g2d, int y, int d, int x){
+        if(a==null){
+            return;
+        }
+        if(y == alturaArvore(a)){
+            g2d.setStroke(new BasicStroke(5f));
+            g2d.drawString(a.getOperador(),30*d,((x-y)*20)+100);
+            g2d.setStroke(new BasicStroke(2f));
+            g2d.drawString(a.getTexto(),30*d+10,((x-y)*20+10)+100);
+        }
+        int dd = d;
+        if(a.getDir()!=null)
+            dd = dd - 1;
+        drawNo(a.getEsq(), g2d, y, dd, x);
+        drawNo(a.getDir(), g2d, y, d+1, x);
+    } 
+    
+    private void drawLines(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setStroke(new BasicStroke(1f));
+        
+        int x = alturaArvore(arv);
+        int d = getDistArvore(arv);
+        int y = x;
+        while(y>0){
+            drawNo(arv, g2d, y, d, x);
+            y--;
+        }
+        
+        
+        
+        /*
         int n = (getWidth()-20)/30;
         for(int i=0; i<=n; i++){
             g2d.drawLine(10+30*i, 10, 10+30*i, getHeight()-10);
@@ -245,8 +290,8 @@ public class Painel extends JPanel{
                         }
                     }
                 break;
-            }     
-        }
+            }    
+        }*/
  
     }
  

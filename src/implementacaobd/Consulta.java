@@ -3,6 +3,7 @@ package implementacaobd;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.util.ArrayList;
+import javax.swing.JFrame;
 
 public class Consulta {
     
@@ -496,6 +497,7 @@ public class Consulta {
         PainelArvore p = new PainelArvore(arvOriginal);
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
         p.setSize(dimension);
+        p.setExtendedState(p.getExtendedState()|JFrame.MAXIMIZED_BOTH);
         p.setVisible(true);
     }
     
@@ -503,6 +505,7 @@ public class Consulta {
         PainelArvore p = new PainelArvore(arvOtimizada);
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
         p.setSize(dimension);
+        p.setExtendedState(p.getExtendedState()|JFrame.MAXIMIZED_BOTH);
         p.setVisible(true);
     }
 
