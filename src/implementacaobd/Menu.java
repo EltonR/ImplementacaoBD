@@ -7,10 +7,10 @@ import javax.swing.JOptionPane;
 public class Menu extends javax.swing.JFrame {
     
     private static Painel jPanel1;
+    private Consulta c;
 
     public Menu() {
         initComponents();
-        
     }
 
     
@@ -37,9 +37,19 @@ public class Menu extends javax.swing.JFrame {
 
         jButton2.setText("Ver Arvore Otimizada");
         jButton2.setEnabled(false);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Ver Arvore Original");
         jButton3.setEnabled(false);
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -81,7 +91,7 @@ public class Menu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        Consulta c = new Consulta(jTextField1.getText());
+        c = new Consulta(jTextField1.getText());
         String retorno = c.testa();
         c.geraAlgebraOriginal();
         c.printaArvoreOriginal();
@@ -95,6 +105,14 @@ public class Menu extends javax.swing.JFrame {
             jButton3.setEnabled(true);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        c.mostraArvoreOtimizada();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        c.mostraArvoreOriginal();
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     
     public static void main(String args[]) {

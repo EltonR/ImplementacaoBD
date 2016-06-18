@@ -1,5 +1,7 @@
 package implementacaobd;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 
 public class Consulta {
@@ -491,11 +493,17 @@ public class Consulta {
     }
     
     public void mostraArvoreOriginal(){
-        PainelScroll p = new PainelScroll(arvOriginal);
+        PainelArvore p = new PainelArvore(arvOriginal);
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        p.setSize(dimension);
+        p.setVisible(true);
     }
     
     public void mostraArvoreOtimizada(){
-        PainelScroll p = new PainelScroll(arvOtimizada);
+        PainelArvore p = new PainelArvore(arvOtimizada);
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        p.setSize(dimension);
+        p.setVisible(true);
     }
 
     @Override
