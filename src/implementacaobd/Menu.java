@@ -94,6 +94,7 @@ public class Menu extends javax.swing.JFrame {
         c = new Consulta(jTextField1.getText());
         String retorno = c.testa();
         c.geraAlgebraOriginal();
+        c.geraArvoreOtimizada();
         if(!retorno.equalsIgnoreCase("OK")){
             JOptionPane.showMessageDialog(this, retorno, "Erro", JOptionPane.ERROR_MESSAGE);
             jButton2.setEnabled(false);

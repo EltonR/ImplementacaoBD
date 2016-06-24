@@ -32,6 +32,7 @@ public class Consulta {
     private ArrayList<ArrayList<String>> colsSelect;
     private ArrayList<ArrayList<String>> colsWhere;
     private ArrayList<ArrayList<String>> colsJoin;
+    private ArrayList<ArrayList<String>> whereAllBefore;
     private ArrayList<String> whereAfter;
     private ArrayList<String> whereBefore;
     
@@ -52,6 +53,7 @@ public class Consulta {
         colsJoin = new ArrayList<>();
         whereBefore = new ArrayList<>();
         whereAfter = new ArrayList<>();
+        whereAllBefore = new ArrayList();
     }
     
     public String testa(){
@@ -253,21 +255,44 @@ public class Consulta {
                 if(np!=0){
                     return "Erro na utilização do parênteses";
                 }
-                
+                if(abreP.size()!=fechaP.size()){
+                    return "Erro na utilização dos parênteses";
+                }
+                for(int i=0; i<abreP.size(); i++){
+                    System.out.println("ABREP="+abreP.get(i));
+                }
+                for(int i=0; i<fechaP.size(); i++){
+                    System.out.println("FECHAP="+fechaP.get(i));
+                }
                 String s = where;
                 
                 int i=0;
                 int j=0;
                 while(abreP.size()!=0){
+                    System.out.println("ABREP S="+abreP.size());
+                    System.out.println("FECHAP S="+fechaP.size());
+                    for(int k=0; k<abreP.size(); k++){
+                        System.out.println("ABREP="+abreP.get(k));
+                    }
+                    for(int k=0; k<fechaP.size(); k++){
+                        System.out.println("FECHAP="+fechaP.get(k));
+                    }
                     for(int v=0; v<abreP.size(); v++){
                     }
+                    System.out.println("I======"+i);
                     String ss = s.substring(abreP.get(i)+1,fechaP.get(0));
+                    System.out.println("SS==="+ss);
                     if(!ss.contains("(")){
+                        System.out.println("ENTRA");
                         parenteses.add(ss);
                         //s = s.substring(0,abreP.get(i))+" '"+String.valueOf(parenteses.size()-1)+"' "+s.substring(fechaP.get(0)+1,s.length()-1);
                         int dif = s.length();
-                        s = s.replace("("+ss+")", " @"+String.valueOf(parenteses.size()-1)+"@ ");
+                        System.out.println("DIF ANTES=="+dif);
+                        System.out.println("S ANTES == "+s);
+                        s = s.replaceFirst("\\("+ss+"\\)", " @"+String.valueOf(parenteses.size()-1)+"@ ");
+                        System.out.println("S DEPOIS == "+s);
                         dif-=s.length();
+                        System.out.println("DIF DEPOIS=="+dif);
                         for(int k=1; k<fechaP.size(); k++){
                             if(k>i){
                                 int x = abreP.get(k);
@@ -276,7 +301,7 @@ public class Consulta {
                             }
                             int y = fechaP.get(k);
                             y-=dif;
-                            fechaP.set(k, y);
+                            fechaP.set(k, y); 
                         }
                         abreP.remove(i);
                         fechaP.remove(0);
@@ -546,17 +571,18 @@ public class Consulta {
         }
     }
     
-    private void geraArvoreOtimizada(){
+    public void geraArvoreOtimizada(){
         for(int i=0; i<tabelas.size(); i++){
             colsSelect.add(new ArrayList<>());
             colsWhere.add(new ArrayList<>());
             colsJoin.add(new ArrayList<>());
+            whereAllBefore.add(new ArrayList<>());
         }
         for(int i=0; i<colunas.size(); i++){
             String[] s = colunas.get(i).trim().split("[.]");
             for(int j=0; j<tabelas.size(); j++){
                 if(s[0].equalsIgnoreCase(tabelas.get(j))){
-                    colsSelect.get(j).add(s[1]);
+                    colsSelect.get(j).add(colunas.get(i));
                 }
             }
         }
@@ -566,13 +592,70 @@ public class Consulta {
             String[] ss2 = s[1].trim().split("[.]");
             for(int j=0; j<tabelas.size(); j++){
                 if(ss1[0].equalsIgnoreCase(tabelas.get(j))){
-                    colsSelect.get(j).add(ss1[1]);
+                    colsSelect.get(j).add(s[0]);
                 }
                 if(ss2[0].equalsIgnoreCase(tabelas.get(j))){
-                    colsSelect.get(j).add(ss2[1]);
+                    colsSelect.get(j).add(s[1]);
                 }
             }
         }
+        
+        verificaParentese(parenteses.get(parenteses.size()-1));
+        
+        for(int i=0; i<whereBefore.size(); i++){
+            for(int j=0; j<tabelas.size(); j++){
+                if(whereBefore.get(i).contains(tabelas.get(j)+".")){
+                    whereAllBefore.get(j).add(whereBefore.get(i));
+                    getColunasWhere(whereBefore.get(i),j);
+                }
+            }
+        }
+        
+        
+        
+        for(int i=0; i<whereBefore.size(); i++){
+            System.out.println("WHEREBEFORE== "+whereBefore.get(i));
+        }
+        for(int i=0; i<whereAfter.size(); i++){
+            System.out.println("WHEREAFTER== "+whereAfter.get(i));
+        }
+        
+        if(tabelas.size() == 1){
+            arvOtimizada = getBranchTable(0);
+        }else{
+            for(int i=0; i<joins.size(); i++){
+                Arvore j = arvOtimizada;
+                arvOtimizada = new Arvore("JOIN",joins.get(i));
+                Arvore a = getBranchTable(i+1);
+                if(i==0){
+                    Arvore b = getBranchTable(0);
+                    arvOtimizada.addFilho(b,a);
+                }else{
+                    arvOtimizada.addFilho(j,a);
+                }
+                System.out.println("NO "+arvOtimizada.getOperador());
+                System.out.println("ESQ "+arvOtimizada.getEsq().getOperador());
+                System.out.println("DIR "+arvOtimizada.getDir().getOperador());
+            }
+        }
+        String whe = "";
+        for(int i=0; i<whereAfter.size(); i++){
+            if(!whe.equals("")){
+                whe+=" AND ";
+            }
+            whe += whereAfter.get(i);
+        }
+        if(!whe.equalsIgnoreCase("")){
+            Arvore j = arvOtimizada;
+            arvOtimizada = new Arvore("WHERE", whe);
+            arvOtimizada.addFilho(j);
+        }
+        Arvore k = arvOtimizada;
+        arvOtimizada = new Arvore("SELECT", select);
+        arvOtimizada.addFilho(k);
+        setDadosArvore(arvOtimizada);
+        
+        
         
         /*for(int i=0; i<parenteses.size(); i++){
             if(parenteses.get(i).contains(" OR ")){
@@ -634,6 +717,195 @@ public class Consulta {
             }
         }*/
         //getWheres();
+    }
+    
+    private void getColunasWhere(String str, int x){
+        String[] s = str.split(" OR ");
+        
+        for(int i=0; i<s.length; i++){
+            String[] ss = s[i].split(" > | < | = ");
+            if(!(ss[0].contains("'") || ss[0].contains("\""))){
+                if(!ss[0].replace("[.]", "").matches("[0-9]+")){
+                    colsWhere.get(x).add(ss[0]);
+                }
+            }
+            if(!(ss[1].contains("'") || ss[1].contains("\""))){
+                if(!ss[1].replace("[.]", "").matches("[0-9]+")){
+                    colsWhere.get(x).add(ss[1]);
+                }
+            }
+        }
+    }
+    
+    private Arvore getBranchTable(int x){
+        Arvore a = new Arvore("FROM",tabelas.get(x));
+        String sel = "";
+        Set<String> hs = new HashSet<>();
+        hs.addAll(colsSelect.get(x));
+        hs.addAll(colsJoin.get(x));
+        hs.addAll(colsWhere.get(x));
+        colsSelect.get(x).clear();
+        colsSelect.get(x).addAll(hs);
+        for(int i=0; i<colsSelect.get(x).size(); i++){
+            if(!sel.equalsIgnoreCase("")){
+                sel+=", ";
+            }
+            sel += colsSelect.get(x).get(i);
+        }
+        if(!sel.equalsIgnoreCase("")){
+            Arvore b = a;
+            a = new Arvore("SELECT",sel);
+            a.addFilho(b);
+        }
+        String whe = "";
+        for(int i=0; i<whereAllBefore.get(x).size(); i++){
+            if(!whe.equalsIgnoreCase("")){
+                whe+=" AND ";
+            }
+            whe+=whereAllBefore.get(x).get(i);
+        }
+        if(!whe.equalsIgnoreCase("")){
+            Arvore b = a;
+            a = new Arvore("WHERE",whe);
+            a.addFilho(b);
+        }
+        return a;
+    }
+    
+    private void verificaParentese(String p){
+        String[] s = p.trim().split(" AND ");
+        for(int i=0; i<s.length; i++){
+            verificaAnd(s[i]);
+        }
+    }
+    
+    private void verificaAnd(String p){
+        System.out.println("P=="+p);
+        if(!p.contains(" OR ")){
+            if(p.contains("@")){
+                verificaParentese(parenteses.get(Integer.valueOf(p.replace("@", "").trim())));
+            }else{
+                String tab1 = "";
+                String tab2 = "";
+                String[] s = p.split(" > | < | = ");
+                System.out.println("s[0]==="+s[0]);
+                System.out.println("s[1]==="+s[1]);
+                if(!(s[0].contains("'") || s[0].contains("\""))){
+                    System.out.println("ENTRA S[0]");
+                    if(!s[0].replace("[.]","").matches("[0-9]+")){
+                        System.out.println("ENTRA 2 S[0]");
+                        String[] ss = s[0].split("[.]");
+                        tab1 = ss[0];
+                        for(int i=0; i<tabelas.size(); i++){
+                            if(ss[0].equalsIgnoreCase(tabelas.get(i))){
+                                colsWhere.get(i).add(s[0]);
+                            }
+                        }
+                    }
+                }
+                if(!(s[1].contains("'") || s[1].contains("\""))){
+                    System.out.println("ENTRA S[1]");
+                    if(!s[1].replace("[.]","").matches("[0-9]+")){
+                        System.out.println("ENTRA 2 S[1]");
+                        String[] ss = s[1].split("[.]");
+                        tab2 = ss[0];
+                        for(int i=0; i<tabelas.size(); i++){
+                            if(ss[0].equalsIgnoreCase(tabelas.get(i))){
+                                colsWhere.get(i).add(s[1]);
+                            }
+                        }
+                    }
+                }
+                if(!tab1.equalsIgnoreCase("")){
+                    if(tab2.equalsIgnoreCase("")){
+                        whereBefore.add(p);
+                    }else{
+                        if(tab1.equalsIgnoreCase(tab2)){
+                            whereBefore.add(p);
+                        }else{
+                            whereAfter.add(p);
+                        }
+                    }
+                }
+            }
+        }else{
+            verificaOr(p);
+        }
+    }
+    
+    private void verificaOr(String p){
+        System.out.println("P===="+p);
+        String[] s = p.split(" OR ");
+        System.out.println("S[0]="+s[0]);
+        System.out.println("S[1]="+s[1]);
+        ArrayList<String> first = verificaLadoOr(s[0]);
+        System.out.println("FIRST.SIZE="+first.size());
+        Set<String> hs = new HashSet<>();
+        hs.addAll(first);
+        first.clear();
+        first.addAll(hs);
+        
+        if(first.size()>1){
+            whereAfter.add(p);
+            return;
+        }
+        
+        for(int i=1; i<s.length; i++){
+            ArrayList<String> next = verificaLadoOr(s[1]);
+            hs = new HashSet<>();
+            hs.addAll(next);
+            next.clear();
+            next.addAll(hs);
+            
+            if(next.size()>1){
+                whereAfter.add(p);
+                return;
+            }
+            if(first.get(0).equals(next.get(0))){
+                whereBefore.add(p);
+                return;
+            }
+        }
+        whereAfter.add(p);
+    }
+    
+    private ArrayList verificaLadoOr(String p){
+        ArrayList<String> ret = new ArrayList();
+        String[] s = p.split("@");
+        String f = "";
+        for(int i=0; i<s.length; i++){
+            if(s[i].matches("[0-9]+")){
+                f+=" "+parenteses.get(Integer.valueOf(s[i].replace("@", "").trim()))+" ";
+            }else{
+                f+=s[i]+" ";
+            }
+        }
+        System.out.println("F==="+f);
+        for(int i=0; i<tabelas.size(); i++){
+            if(f.trim().contains(tabelas.get(i)+".")){
+                ret.add(tabelas.get(i));
+            }
+        }
+        String[] ss = f.split(" AND | OR ");
+        System.out.println("\n\n\nF===="+f+"\n\n\n");
+        for(int i=0; i<ss.length; i++){
+            System.out.println("\n\n\nSS===="+ss[i]+"\n\n\n");
+            String[] sss = ss[i].split(" > | < | = ");
+            for(int j=0; j<sss.length; j++){
+                System.out.println("\n\n\nSSS==="+sss[i]+"\n\n\n");
+                if(!(sss[i].contains("'") || sss[i].contains("\""))){
+                    if(!sss[i].replace(".", "").matches("[0-9]+")){
+                        String[] ssss = sss[i].split("[.]");
+                        for(int k=0; k<tabelas.size(); k++){
+                            if(ssss[0].equalsIgnoreCase(tabelas.get(k))){
+                                colsWhere.get(k).add(sss[i]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return ret;
     }
     /*
     private void getWheres(){
