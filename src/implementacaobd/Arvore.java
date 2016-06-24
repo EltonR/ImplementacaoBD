@@ -5,13 +5,17 @@ public class Arvore {
     private String texto;
     private Arvore dir;
     private Arvore esq;
+    
     private int dist;
+    private int alt;
+    private int nivel;
+    private int margem;
     
     public Arvore(String op, String texto){
         this.texto = texto;
         switch(op){
             case "SELECT":
-                operador = "P";
+                operador = " P";
             break;
             case "FROM":
                 operador = texto;
@@ -21,7 +25,7 @@ public class Arvore {
                 operador = "|X|";
             break;            
             case "WHERE":
-                operador = "S";
+                operador = " S";
             break;
         }
         esq = null;
@@ -78,4 +82,30 @@ public class Arvore {
     public void incDist(){
         dist++;
     }    
+
+    public int getAlt() {
+        return alt;
+    }
+
+    public void setAlt(int alt) {
+        this.alt = alt;
+    }
+
+    public int getNivel() {
+        return nivel;
+    }
+
+    public void setNivel(int nivel) {
+        this.nivel = nivel;
+    }
+
+    public int getMargem() {
+        return margem;
+    }
+
+    public void setMargem(int margem) {
+        this.margem = margem;
+    }
+    
+    
 }
