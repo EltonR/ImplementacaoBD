@@ -3,6 +3,8 @@ package implementacaobd;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import javax.swing.JFrame;
 
 public class Consulta {
@@ -633,35 +635,68 @@ public class Consulta {
         }*/
         getWheres();
     }
-    
+    /*
     private void getWheres(){
         for(int i=0; i<parenteses.size(); i++){
             String[] s = parenteses.get(i).split(" AND ");
             for(int j=0; j<s.length; j++){
                 if(s[j].contains(" OR ")){
+                    String[] ss = s[j].split(" OR ");
+                    ArrayList bef;
+                    ArrayList aft;
+                    if(ss[0].trim().endsWith("@")){
+                        bef = parenteseContain(ss[0]);
+                    }else{
+                        bef = new ArrayList();
+                        for(int k=0; k<tabelas.size(); k++){
+                            if(ss[0].contains(" "+tabelas.get(k)+".")){
+                                bef.add(tabelas.get(k));
+                            }
+                        }
+                    }
+                    Set<String> hs = new HashSet<>();
+                    hs.addAll(bef);
+                    bef.clear();
+                    bef.addAll(hs);
+                    if(bef.size() > 1){
+                        String x = "";
+                    }
+                    for(int k=1; k<ss.length; k++){
+                        if(ss[1].trim().contains("@")){
+                            aft = parenteseContain(ss[1]);
+                        }else{
+                            aft = new ArrayList();
+                            for(int l=0; l<tabelas.size(); l++){
+                                if(ss[1].contains(" "+tabelas.get(l)+".")){
+                                    aft.add(tabelas.get(l));
+                                }
+                            }
+                        }
+                        
+                    }
                     
                 }
             }
-        }     
-    }
-    
-    private boolean parenteseContain(String p, String tab){
-        String s = parenteses.get(Integer.valueOf(p));
-        String[] ss = s.split("@");
-        boolean ret = false;
-        for(int i=0; i<ss.length; i++){
-            if(ss[i].length() == 1 && ss[i].matches("[0-9]+")){
-                ret = parenteseContain(ss[i], tab);
-            }
         }
-        for(int i=0; i<tabelas.size(); i++){
-            if(!tabelas.get(i).equalsIgnoreCase(tab)){
-                if(s.contains(" "+tabelas.get(i)+".")){
-                    return true;
+    }*/
+    
+    private ArrayList parenteseContain(String p){
+        if(p.contains("@")){
+            String[] ss = p.split("@");
+            for(int i=0; i<ss.length; i++){
+                if(ss[i].length() == 1 && ss[i].matches("[0-9]+")){
+                    String sss = parenteses.get(Integer.valueOf(ss[i]));
+                    return parenteseContain(p.replace("@"+ss[i]+"@", sss));
                 }
             }
         }
-        return ret;
+        ArrayList<String> list = new ArrayList<>();
+        for(int i=0; i<tabelas.size(); i++){
+            if(p.contains(" "+tabelas.get(i)+".")){
+                list.add(tabelas.get(i));
+            }
+        }
+        return list;
     }
     
     public void mostraArvoreOriginal(){
