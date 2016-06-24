@@ -633,7 +633,7 @@ public class Consulta {
                 }
             }
         }*/
-        getWheres();
+        //getWheres();
     }
     /*
     private void getWheres(){
