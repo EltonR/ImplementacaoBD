@@ -92,14 +92,14 @@ public class Menu extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         c = new Consulta(jTextField1.getText());
-        String retorno = c.testa();
-        c.geraAlgebraOriginal();
-        c.geraArvoreOtimizada();
+        String retorno = c.verificaErros();
         if(!retorno.equalsIgnoreCase("OK")){
             JOptionPane.showMessageDialog(this, retorno, "Erro", JOptionPane.ERROR_MESSAGE);
             jButton2.setEnabled(false);
             jButton3.setEnabled(false);
         }else{
+            c.geraArvoreOriginal();
+            c.geraArvoreOtimizada();
             System.out.println("OK");
             jButton2.setEnabled(true);
             jButton3.setEnabled(true);
