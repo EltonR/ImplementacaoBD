@@ -1,12 +1,8 @@
 package implementacaobd;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import javax.swing.JOptionPane;
 
 public class Menu extends javax.swing.JFrame {
-    
-    private static Painel jPanel1;
     private Consulta c;
 
     public Menu() {
@@ -94,7 +90,8 @@ public class Menu extends javax.swing.JFrame {
         c = new Consulta(jTextField1.getText());
         String retorno = c.verificaErros();
         if(!retorno.equalsIgnoreCase("OK")){
-            JOptionPane.showMessageDialog(this, retorno, "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, retorno, "Erro", 
+                    JOptionPane.ERROR_MESSAGE);
             jButton2.setEnabled(false);
             jButton3.setEnabled(false);
         }else{

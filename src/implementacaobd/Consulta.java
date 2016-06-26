@@ -209,7 +209,7 @@ public class Consulta {
                     return "Erro na utilização dos parênteses";
                 String s = where;
                 int i=0;
-                while(abreP.size()!=0){
+                while(!abreP.isEmpty()){
                     String ss = s.substring(abreP.get(i)+1,fechaP.get(0));
                     if(!ss.contains("(")){
                         parenteses.add(ss);
@@ -261,16 +261,22 @@ public class Consulta {
             }
         }
         for(int i=0; i<wheres.size(); i++){
-            if(!(wheres.get(i).contains(" > ") || wheres.get(i).contains(" < ") || wheres.get(i).contains(" = ")))
-                return "Erro nos operadores na cláusula WHERE\n Em: "+wheres.get(i);
+            if(!(wheres.get(i).contains(" > ") || wheres.get(i).contains(" < ") 
+                    || wheres.get(i).contains(" = ")))
+                return "Erro nos operadores na cláusula WHERE\n Em: "
+                        +wheres.get(i);
             String[] s0 = wheres.get(i).split(" > | < | = ");
             if(s0.length != 2)
-                return "Erro nos operadores na cláusula WHERE\n Em: "+wheres.get(i);
-            if(!(s0[0].trim().startsWith("\"") || s0[0].trim().startsWith("'") || s0[1].trim().startsWith("\"") || s0[1].trim().startsWith("'")))
+                return "Erro nos operadores na cláusula WHERE\n Em: "
+                        +wheres.get(i);
+            if(!(s0[0].trim().startsWith("\"") || s0[0].trim().startsWith("'") 
+                    || s0[1].trim().startsWith("\"") || s0[1].trim()
+                            .startsWith("'")))
                 if(s0[0].trim().contains(" ") || s0[1].trim().contains(" "))
                     return "Erro na clausula WHERE\n Em: "+wheres.get(i);
             if(!(s0[0].contains(".") || s0[1].contains(".")))
-                return "Erro nas tabelas presentes na cláusula WHERE\n Em: "+wheres.get(i);
+                return "Erro nas tabelas presentes na cláusula WHERE\n Em: "
+                        +wheres.get(i);
             
             int tab = 0;
             if(s0[0].contains("'")){
@@ -282,34 +288,40 @@ public class Consulta {
                 if(s0[0].contains("\"")){
                     String ls = s0[0].replace("\"","");
                     if(s0[0].length()-ls.length()!=2){
-                        return "Erro nos operadores na claúsula WHERE\n Em: "+s0[0];
+                        return "Erro nos operadores na claúsula WHERE\n Em: "
+                                +s0[0];
                     }
                 }else{
                     if(s0[0].contains(".")){
                         String ls = s0[0].replace(".","");
                         if(s0[0].length()-ls.length()!=1){
-                            return "Erro nos operadores na claúsula WHERE\n Em: "+s0[0];
+                            return "Erro nos operadores na claúsula WHERE\n "
+                                    + "Em: "+s0[0];
                         }
                         
                         String[] s1 = s0[0].split("[.]");
                         if(s1.length!=2){
-                            return "Erro nos operadores na claúsula WHERE\n Em: "+s0[0];
+                            return "Erro nos operadores na claúsula WHERE\n "
+                                    + "Em: "+s0[0];
                         }
                         
                         if(!s1[0].matches("[0-9]+")){
                             if(!tabelas.contains(s1[0].trim())){
-                                return "Erro nas tabelas presentes na cláusula WHERE\n Em: "+s1[0];
+                                return "Erro nas tabelas presentes na cláusula "
+                                        + "WHERE\n Em: "+s1[0];
                             }else{
                                 tab = 1;
                             }  
                         }else{
                             if(!s1[1].matches("[0-9]+")){
-                                return "Erro nos operadores na claúsula WHERE\n Em: "+s1[1];
+                                return "Erro nos operadores na claúsula WHERE\n"
+                                        + " Em: "+s1[1];
                             }
                         }
                     }else{
                         if(!s0[0].matches("[0-9]+")){
-                            return "Erro nos operadores na claúsula WHERE\n Em: "+s0[1];
+                            return "Erro nos operadores na claúsula WHERE\n"
+                                    + " Em: "+s0[1];
                         }
                     }
                 }
@@ -324,41 +336,48 @@ public class Consulta {
                 if(s0[1].contains("\"")){
                     String ls = s0[1].replace("\"","");
                     if(s0[1].length()-ls.length()!=2){
-                        return "Erro nos operadores na claúsula WHERE\n Em: "+s0[1];
+                        return "Erro nos operadores na claúsula WHERE\n"
+                                + " Em: "+s0[1];
                     }
                 }else{
                     if(s0[1].contains(".")){
                         String ls = s0[1].replace(".","");
                         if(s0[1].length()-ls.length()!=1){
-                            return "Erro nos operadores na claúsula WHERE\n Em: "+s0[1];
+                            return "Erro nos operadores na claúsula WHERE\n"
+                                    + " Em: "+s0[1];
                         }
                         
                         String[] s1 = s0[1].split("[.]");
                         if(s1.length!=2){
-                            return "Erro nos operadores na claúsula WHERE\n Em: "+s0[1];
+                            return "Erro nos operadores na claúsula WHERE\n"
+                                    + " Em: "+s0[1];
                         }
                         
                         if(!s1[0].matches("[0-9]+")){
                             if(!tabelas.contains(s1[0].trim())){
-                                return "Erro nas tabelas presentes na cláusula WHERE\n Em: "+s1[0];
+                                return "Erro nas tabelas presentes na cláusula"
+                                        + " WHERE\n Em: "+s1[0];
                             }else{
                                 tab = 1;
                             }
                         }else{
                             if(!s1[1].matches("[0-9]+")){
-                                return "Erro nos operadores na claúsula WHERE\n Em: "+s1[1];
+                                return "Erro nos operadores na claúsula WHERE\n"
+                                        + " Em: "+s1[1];
                             }
                         }
                     }else{
                         if(!s0[1].matches("[0-9]+")){
-                            return "Erro nos operadores na claúsula WHERE\n Em: "+s0[1];
+                            return "Erro nos operadores na claúsula WHERE\n"
+                                    + " Em: "+s0[1];
                         }
                     }
                 }
             }
             
             if(tab == 0){
-                return "Erro nas tabelas presentes na cláusula WHERE\n Em: "+wheres.get(i);
+                return "Erro nas tabelas presentes na cláusula WHERE\n Em: "
+                        +wheres.get(i);
             }
         }
         
@@ -412,7 +431,7 @@ public class Consulta {
         }
         
         Arvore j = arvOriginal;
-        if(wheres.size()!=0){
+        if(!wheres.isEmpty()){
             arvOriginal = new Arvore("WHERE", where);
             arvOriginal.addFilho(j);
             j = arvOriginal;
@@ -425,31 +444,26 @@ public class Consulta {
     
     private void setDadosArvore(Arvore a){
         int altura = alturaArvore(a);
-        
         setMargemArvore(a,getDistArvore(a));
         setAlturaArvore(a, 0);
         setNivelArvore(a, altura);
     }
     
     private void setAlturaArvore(Arvore a, int alt){
-        if(a == null){
+        if(a == null)
             return;
-        }
-        
         a.setAlt(alt);
         setAlturaArvore(a.getEsq(), alt+1);
         setAlturaArvore(a.getDir(), alt+1);
     }
     
     private void setMargemArvore(Arvore a, int dd){
-        if(a == null){
+        if(a == null)
             return;
-        }
-        
         a.setMargem(dd);
-        if(a.getDir() == null){
+        if(a.getDir() == null)
             setMargemArvore(a.getEsq(), dd);
-        }else{
+        else{
             setMargemArvore(a.getEsq(), dd-1);
             setMargemArvore(a.getDir(), dd+1);
         }
@@ -457,21 +471,18 @@ public class Consulta {
     
     private void setNivelArvore(Arvore a, int alt){
         int dd = 0;
-        for(int i=0; i<alt; i++){
+        for(int i=0; i<alt; i++)
             dd = setNivelAltura(a,i,dd);
-        }
+        
     }
     
     private int setNivelAltura(Arvore a, int alt, int dd){
-        if(a==null){
+        if(a==null)
             return dd;
-        }
-        
         if(a.getAlt()==alt){
             a.setNivel(dd);
             return dd+1;
         }
-        
         int r = setNivelAltura(a.getEsq(), alt, dd);
         return setNivelAltura(a.getDir(), alt, r);
     }
@@ -650,7 +661,8 @@ public class Consulta {
     private void verificaAnd(String p){
         if(!p.contains(" OR ")){
             if(p.contains("@")){
-                verificaParentese(parenteses.get(Integer.valueOf(p.replace("@", "").trim())));
+                verificaParentese(parenteses.get(Integer.valueOf(p
+                        .replace("@", "").trim())));
             }else{
                 String tab1 = "";
                 String tab2 = "";
@@ -739,7 +751,8 @@ public class Consulta {
         String f = "";
         for(int i=0; i<s.length; i++){
             if(s[i].matches("[0-9]+")){
-                f+=" "+parenteses.get(Integer.valueOf(s[i].replace("@", "").trim()))+" ";
+                f+=" "+parenteses.get(Integer.valueOf(s[i].replace("@", "")
+                        .trim()))+" ";
             }else{
                 f+=s[i]+" ";
             }
@@ -773,6 +786,7 @@ public class Consulta {
     
     public void mostraArvoreOriginal(){
         PainelArvore p = new PainelArvore(arvOriginal);
+        p.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
         p.setSize(dimension);
         p.setExtendedState(p.getExtendedState()|JFrame.MAXIMIZED_BOTH);
@@ -781,6 +795,7 @@ public class Consulta {
     
     public void mostraArvoreOtimizada(){
         PainelArvore p = new PainelArvore(arvOtimizada);
+        p.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
         p.setSize(dimension);
         p.setExtendedState(p.getExtendedState()|JFrame.MAXIMIZED_BOTH);
