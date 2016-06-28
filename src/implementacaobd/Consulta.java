@@ -144,7 +144,12 @@ public class Consulta {
         
         String[] s0 = from.split(" JOIN ");
         for(int i=0; i<s0.length-1; i++){
+            if(!s0[i+1].contains(" ON "))
+                return "Clausula ON não encontrada";
+            
             String[] s1 = s0[i+1].split(" ON ");
+            if(s1.length!=2)
+                return "Erro na cláusula ON";
             joins.add(s1[1]);
         }
         
